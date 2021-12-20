@@ -50,9 +50,11 @@ def codegen(arguments):
         parser_code_str += f"\t{parser_arg_str}\n"
         run_code_str += f"{run_arg_str}\n"
 
+    # file end
     run_code_str += "\npython3 train.py"
     for name in name_list:
         run_code_str += f" {name} ${{{filter_variable_name(name)}}}"
+
     return parser_code_str, run_code_str 
 
 def main(args):
@@ -64,7 +66,9 @@ def main(args):
     if not isinstance(arguments, list):
        raise TypeError('json file should contain a list of args ([])') 
     
+    # codegen of the output files
     parser_code, run_code = codegen(arguments)
+
     with open(args.out_name, "w") as out_file:
         out_file.write(parser_code)
 
