@@ -1,0 +1,23 @@
+package:
+  name: genparser 
+  version: "0.1"
+
+source:
+  path: ../
+
+build:
+  number: 1
+
+test:
+  requires:
+    - python
+
+requirements:
+  host:
+    - python
+
+  run:
+    - python
+
+about:
+  home: https://github.com/francescocastelli/argparse-codegen
