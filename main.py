@@ -6,6 +6,8 @@ param_list = ['name', 'action', 'nargs', 'const', 'default',
               'type', 'choices', 'required', 'help', 'metavar', 
               'dest']
 
+header = "'''\n\nCode auto-generated using https://github.com/francescocastelli/argparse-codegen\n\n'''\n\n"
+
 def filter_variable_name(arg_name):
     filter_regex = '-'
     return re.sub(filter_regex, '', arg_name)
@@ -17,12 +19,13 @@ def codegen_arg(arg):
     arg_name = arg['name']
     parser_arg_str = f"parser.add_argument('{arg_name}'"
     for k, v in arg.items():
-        if k == 'name': continue
-
         if k not in param_list:
             raise ValueError(f"argument {k} is not valid! Should be one of: "
                              f"{param_list}")
 
+        if k == 'name': continue
+
+        # type for now doesn't work
         if isinstance(v, str):
             parser_arg_str += f", {k}='{v}'"
         else: 
@@ -36,10 +39,12 @@ def codegen_arg(arg):
 
 def codegen(arguments):
     # file initialization
-    parser_code_str = "import argparse\n\ndef parse_args():\n"
+    parser_code_str = header
+    parser_code_str += "import argparse\n\ndef parse_args():\n"
     parser_code_str += "\tparser = argparse.ArgumentParser()\n"
 
     run_code_str = "#!/bin/bash\n\n"
+    run_code_str += header
 
     # file bodies
     name_list = []
@@ -52,8 +57,12 @@ def codegen(arguments):
 
     # file end
     run_code_str += "\npython3 train.py"
-    for name in name_list:
+    for i, name in enumerate(name_list, 1):
         run_code_str += f" {name} ${{{filter_variable_name(name)}}}"
+        if not i % 3: 
+            run_code_str += " \\\n"
+            run_code_str += "\t"*8
+
 
     return parser_code_str, run_code_str 
 
@@ -69,17 +78,19 @@ def main(args):
     # codegen of the output files
     parser_code, run_code = codegen(arguments)
 
-    with open(args.out_name, "w") as out_file:
+    with open(args.parser_name, "w") as out_file:
         out_file.write(parser_code)
 
-    with open("run.sh", "w") as out_file:
+    with open(args.run_name, "w") as out_file:
         out_file.write(run_code)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('json', nargs=1,
                         help='path to json file with all the args')
-    parser.add_argument('--out_name', default='argparse.py',
-                        help='path to the output file')
+    parser.add_argument('--parser_name', default='argparser.py',
+                        help='path to the output arg parser file')
+    parser.add_argument('--run_name', default='run.sh',
+                        help='path to the output run file')
     args = parser.parse_args()
     main(args)
