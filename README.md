@@ -1,7 +1,9 @@
+# argparse-codegen
+
 Python package for creating a parser (using the argparse module of python) of input arguments and the corresponding .sh file for running the python script.
 The arguments are provided as a json file.
 
-### Install
+## Install
 
 ```
 cd conda-recipe
@@ -10,7 +12,7 @@ conda build . --output-folder path/to/build/folder
 conda install --use-local gen-parser-0.1-py38_1.tar.bz2
 ```
 
-### Usage
+## Usage
 
 ```
 from genparser.codegen import parser_codegen
@@ -35,7 +37,7 @@ where arg.json:
 ]
 ```
 
-output: two files, argparser.py and run.sh
+### output: argparser.py and run.sh
 
 argparser.py: 
 
